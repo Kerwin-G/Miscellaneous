@@ -1,0 +1,21 @@
+#!/bin/bash
+
+
+if [ $# -eq 0 -o $# -ne 1 ]
+then
+	echo "usage: codonhistogram <dnafile>"
+else
+if [ -r "$1" ]
+ then
+codons=`fold -w3 $1`
+for codon in $codons
+do
+ N=`fold -w3 $1 | grep -o $codon | wc -l`
+ echo "$N $codon"
+done | sort -k1nr | uniq
+ else
+	echo $1 is not readable / not a valid file
+  exit
+ fi
+exit
+fi 
