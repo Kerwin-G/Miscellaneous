@@ -1,0 +1,146 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+my ($file);
+my ($n, $s, ,$w, $e ,$nl, $sl, $wl, $el);
+$n=0;
+$s=0;
+$w=0;
+$e=0;
+my ($nc,$sc,$wc,$ec);
+$nc=0;
+$sc=0;
+$wc=0;
+$ec=0;
+my $origin=0;
+my $H=$ARGV[0];
+my $L=$ARGV[1];
+print"\n";
+#Tests
+die "Usage: Height Length Filepath.\n" unless ($#ARGV == 2);
+die "The file doesnt exist.\n" unless ((-e $ARGV[2])&&(-r $ARGV[2]));
+die "Dimensions invalid.\n" unless (($H >=10) && ($L>=10)&&($H>0)&&($L>0));
+#conversion of dimensions if they are even
+if ($H%2 ==0){
+	$nl=$H/2;
+	$H+=1;
+}
+else {
+       $nl=($H-1)/2;	
+}
+$sl=-$nl;
+
+if ($L%2 ==0) {
+$el=$L/2;
+$L+=1;
+	}
+else{
+	$el=($L-1)/2;
+	}
+$wl=-$el;
+
+#opening file
+$file = $ARGV[2];
+
+open(FILE, $file) or die "cant open file \n";
+my $chars;
+while ($chars = <FILE>){
+#test for valid file
+die "File contains invalid directions\n" unless ($chars =~ /^[\n\snswe]+$/);
+#replace newline with white space?
+#$chars =~ tr/\n/ /g;
+#$chars =~ s/\s+//g;
+my @char;
+@char = split (//, $chars);
+#evaluating steps
+foreach my $letter (@char){
+if (($n!=$nl)&&($s!=$sl)&&($w!=$wl)&&($e!=$el)){
+	if ($letter eq 'n'){
+	$n+=1;
+	$s+=1;
+	$nc+=1;
+   }
+        if ($letter eq 's'){
+        $n-=1;
+        $s-=1;
+	$sc+=1;
+   }
+        if ($letter eq 'w'){
+        $w-=1;
+        $e-=1;
+	$wc+=1
+   }
+	if ($letter eq 'e') {
+	$w+=1;
+	$e+=1;
+	$ec+=1;
+   }
+}
+if (($n==0)&&($s==0)&&($w==0)&&($e==0)){
+	$origin+=1;
+}
+}
+#sketch of city
+print "  ******City Dimension Sketch******\n";
+print "                 $L\n";
+print "     <------------------------->\n";
+print "    |-------------|-------------|\n";
+print "    |-------------|-------------|\n";
+print "    |-------------|-------------|\n";
+print "$H  <--------->Origin<--------->G\n";
+print "    |-------------|-------------|\n";
+print "    |-------------|-------------|\n";
+print "    |-------------|-------------|\n";
+print "     <------------------------->\n" ;
+print "KEY:\n Height: $H\n Length: $L\n Gate: G\n";
+print "Distance from Origin(center):\n North Wall: $nl\n South Wall: $nl\n West  Wall: $el\n East  Wall: $el\n";
+print"\n";
+#conclusions
+print "-The walk was, ",$nc+$sc+$wc+$ec, " steps long.\n They returned to the origin ",$origin," times.\n It ended because ";
+if ($n==$nl){
+print "they reached the North Wall\n";
+}
+elsif($s==$sl){
+print "they reached the South Wall\n";
+}
+elsif($w==$wl){
+print "they reached the West Wall\n";
+}
+elsif($e==$el){
+ if(($n>2)||($n<-2)){
+	 print "they reached the East Wall\n"
+	 }
+	 else{
+	 print "they reached at the Gate\n"
+	 }
+	 
+}
+else {
+print "they got tired and failed to exit\n";
+}
+
+print"-Their current location is:\n";
+if($n>0){
+print " $n steps north\n";
+}
+elsif($n<0){
+print abs($n)," steps south\n";
+}
+if ($e>0){
+	if (($n<=2)&&($n>=-2)){
+	print" Out of the city\n";
+	}
+	else{
+print "$e steps east of the origin\n";
+}
+}
+elsif ($e<0){
+print abs($e)," steps west of the orgin\n";
+}
+elsif(($n==0)&&($e==0)){ 
+print " at the origin\n";
+}
+}
+close FILE;
+print"\n";
